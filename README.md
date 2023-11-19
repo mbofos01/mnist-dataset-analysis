@@ -26,19 +26,19 @@ For this assignment we are going to analyze a data set of handwritten digits. Th
 
 The data consists of 42,000 examples where each example has 28x28=784 feature values. The first column contains the class label. To read in the data into Python, type (assuming you have saved the data in "D:/mnist.csv"):
 ```python
->>> import pandas as pd
->>> mnist_data = pd.read_csv('D:/mnist.csv').values
+import pandas as pd
+mnist_data = pd.read_csv('D:/mnist.csv').values
 ```
 
 To display an image of a digit, you can use the function "imshow" from the "matlibplot" library. For example, to display an image of the example in the first row of the mnist data set, type:
 
 ```python
->>> import matplotlib.pyplot as plt
->>> labels = mnist_data[:, 0]
->>> digits = mnist_data[:, 1:]
->>> img_size = 28
->>> plt.imshow(digits[0].reshape(img_size, img_size))
->>> plt.show()
+import matplotlib.pyplot as plt
+labels = mnist_data[:, 0]
+digits = mnist_data[:, 1:]
+img_size = 28
+plt.imshow(digits[0].reshape(img_size, img_size))
+plt.show()
 ```
 
 Perform the following analyses, and present the results in your report:
@@ -57,19 +57,19 @@ Report any findings from your exploratory analysis that you think are of interes
 <strong>Coding example in Python:</strong>
 ```python
 # create ink feature
->>> import numpy as np
->>> ink = np.array([sum(row) for row in digits])
+import numpy as np
+ink = np.array([sum(row) for row in digits])
 # compute mean for each digit class
->>> ink_mean = [np.mean(ink[labels == i]) for i in range(10)]
+ink_mean = [np.mean(ink[labels == i]) for i in range(10)]
 # compute standard deviation for each digit class
->>> ink_std = [np.std(ink[labels == i]) for i in range(10)]
+ink_std = [np.std(ink[labels == i]) for i in range(10)]
 ```
 Using only the ink feature, fit a multinomial logit model and evaluate, by looking at the confusion matrix, how well this model can distinguish between the different classes. Since in this part of the assignment we only consider very simple models, you may use the complete data set both for training and evaluation. For example, how well can the model distinguish between the digits "1" and "8"? And how well between "3" and "8"? Scale your feature to have zero mean and unit standard deviation before you fit the multinomial logit model. You can use the function "scale" from "sklearn.preprocessing" for this purpose.
 
 ```python
 # The reshape is neccesary to call LogisticRegression() with a single feature
->>> from sklearn.preprocessing import scale
->>> ink = scale(ink).reshape(-1, 1)
+from sklearn.preprocessing import scale
+ink = scale(ink).reshape(-1, 1)
 ```
 </li>
 
