@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import sklearn.preprocessing as skp
+import sklearn.linear_model as skl
+import sklearn.metrics as skm
 
 
 class MNIST:
@@ -285,6 +288,61 @@ class MNIST:
         plt.text(-0.3, -1.2, f'Majority class: {major_class} ({major_percentage:.1f}%)', fontsize=12)
         plt.show()
 
+    def calculateInkUsed(self):
+        """
+        Description
+        ----------
+        Calculate the amount of ink used for the selected number
+
+        Parameters
+        ----------
+        selected_number : int
+            Selected number
+        
+        Returns
+        -------
+        int
+            Total amount of ink used for the selected digit
+        """
+        # create ink feature
+        ink = np.array([sum(row) for row in self.digits])
+        # compute mean for each digit class
+        ink_mean = [np.mean(ink[self.labels == i]) for i in range(10)]
+        # compute standard deviation for each digit class
+        ink_std = [np.std(ink[self.labels == i]) for i in range(10)]
+
+        return ink, ink_mean, ink_std
+    
+    def plotInkUsedPrediction(self):
+        """
+        Description
+        ----------
+        Build confusion matrix for digits predicted with multinomial logistic regression model from ink used
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        """
+        ink, _, _ = self.calculateInkUsed()
+        # The reshape is neccesary to call LogisticRegression() with a single feature
+        ink = skp.scale(ink).reshape(-1, 1)
+
+        logistic_regression = skl.LogisticRegression(multi_class='multinomial')
+        logistic_regression.fit(ink, self.labels)
+        predicted_labels = logistic_regression.predict(ink)
+
+        confusion_matrix = skm.confusion_matrix(self.labels, predicted_labels)
+        disp = skm.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=range(10))
+        disp.plot()
+        plt.title('Ink Used Confusion Matrix')
+        plt.show()
+
+
+
 
 if __name__ == '__main__':
     mnist = MNIST()
@@ -294,3 +352,4 @@ if __name__ == '__main__':
     mnist.displayImage(0)
     mnist.plotClassDistribution()
     mnist.plotClassPercentage()
+    mnist.plotInkUsedPrediction()
