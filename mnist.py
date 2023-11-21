@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+
 
 class MNIST:
     """
@@ -75,6 +77,7 @@ class MNIST:
             Number of data
         """
         return self.dataframe.shape[0]
+    
     def exportStatisticalAnalysis(self):
         """
         Description
@@ -116,7 +119,44 @@ class MNIST:
                 zero_std.append(i)
 
         print('Pixels with zero mean: ', zero_mean)
-        print('Pixels with zero std: ', zero_std)        
+        print('Pixels with zero std: ', zero_std)  
+
+    def plotHeatmapUnusedPixels(self):
+        """
+        Description
+        ----------
+        Plot heatmap of unused pixels
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        """
+        zero_mean = []
+        zero_std = []
+
+        for i in range(1, 785):
+            hand = self.dataframe.iloc[:, i].describe()[['mean', 'std']]
+            if hand['mean'] == 0.0:
+                zero_mean.append(i)
+            if hand['std'] == 0.0:
+                zero_std.append(i)
+
+        unused_pixels = list(set(zero_mean + zero_std))  # Combine pixels with zero mean and zero std
+        heatmap_data = np.zeros((28, 28))  # Initialize heatmap data
+
+        for pixel in unused_pixels:
+            row = (pixel - 1) // 28  # Calculate row index
+            col = (pixel - 1) % 28   # Calculate column index
+            heatmap_data[row][col] = 1  # Set unused pixel value to 1
+
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(heatmap_data, cmap='YlGnBu')
+        plt.title('Heatmap of Unused Pixels in MNIST')
+        plt.show()      
 
     def get(self, selected_number):
         """
@@ -246,6 +286,7 @@ if __name__ == '__main__':
     mnist = MNIST()
     mnist.exportStatisticalAnalysis()
     mnist.printUnusedPixels()
+    mnist.plotHeatmapUnusedPixels()
     mnist.displayImage(0)
     mnist.plotClassDistribution()
     mnist.plotClassPercentage()
