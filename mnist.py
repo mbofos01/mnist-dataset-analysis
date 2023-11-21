@@ -21,8 +21,12 @@ class MNIST:
         
     Methods
     -------
+    getSize()
+        Get number of data
     exportStatisticalAnalysis()
         Export statistical analysis of MNIST dataset to csv file
+    plotHeatmapUnusedPixels()
+        Plot heatmap of unused pixels
     printUnusedPixels()
         Print unused pixels
     get(selected_number)
