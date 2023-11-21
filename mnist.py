@@ -313,6 +313,28 @@ class MNIST:
 
         return ink, ink_mean, ink_std
     
+    def plotInkUsedStatistics(self):
+        """
+        Description
+        ----------
+        Plot ink used mean and standard deviation per class
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        """
+        ink, ink_mean, ink_std = self.calculateInkUsed()
+        colors = ['b', 'g', 'r', 'c', 'm', 'y', 'pink', 'orange', 'purple', 'brown']
+
+        plt.bar(range(10), ink_mean, color=colors)
+        plt.errorbar(range(10), ink_mean, yerr=ink_std, color='k', fmt='o')
+        plt.show()
+
+    
     def plotInkUsedPrediction(self):
         """
         Description
@@ -346,10 +368,11 @@ class MNIST:
 
 if __name__ == '__main__':
     mnist = MNIST()
-    mnist.exportStatisticalAnalysis()
-    mnist.printUnusedPixels()
-    mnist.plotHeatmapUnusedPixels()
-    mnist.displayImage(0)
-    mnist.plotClassDistribution()
-    mnist.plotClassPercentage()
-    mnist.plotInkUsedPrediction()
+    # mnist.exportStatisticalAnalysis()
+    # mnist.printUnusedPixels()
+    # mnist.plotHeatmapUnusedPixels()
+    # mnist.displayImage(0)
+    # mnist.plotClassDistribution()
+    # mnist.plotClassPercentage()
+    # mnist.plotInkUsedPrediction()
+    mnist.plotInkUsedStatistics()
