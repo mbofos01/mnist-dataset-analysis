@@ -1,11 +1,10 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
-import sklearn.preprocessing as skp
 import sklearn.linear_model as skl
 import sklearn.metrics as skm
-
+import sklearn.preprocessing as skp
 
 class MNIST:
     """
