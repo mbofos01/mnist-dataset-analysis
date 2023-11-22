@@ -332,6 +332,10 @@ class MNIST:
 
         plt.bar(range(10), ink_mean, color=colors)
         plt.errorbar(range(10), ink_mean, yerr=ink_std, color='k', fmt='o')
+        plt.xticks(range(10)) 
+        plt.xlabel('Labels')
+        plt.ylabel('Ink Used')
+        plt.title('Ink Used Statistics')
         plt.show()
 
     
