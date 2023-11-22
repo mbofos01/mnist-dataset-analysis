@@ -44,7 +44,12 @@ class MNIST:
         Plot class distribution
     plotClassPercentage()
         Plot class percentage
-        
+    calculateInkUsed()
+        Calculate the amount of ink used for the selected number
+    plotInkUsedStatistics()
+        Plot ink used mean and standard deviation per class
+    plotInkUsedPrediction()
+        Build confusion matrix for digits predicted with multinomial logistic regression model from ink used
     """
 
     def __init__(self):
@@ -296,13 +301,16 @@ class MNIST:
 
         Parameters
         ----------
-        selected_number : int
-            Selected number
-        
+        None
+
         Returns
         -------
-        int
-            Total amount of ink used for the selected digit
+        ink : numpy.ndarray
+            Ink used for each data
+        ink_mean : list
+            Mean of ink used for each class
+        ink_std : list
+            Standard deviation of ink used for each class
         """
         # create ink feature
         ink = np.array([sum(row) for row in self.digits])
@@ -338,7 +346,6 @@ class MNIST:
         plt.title('Ink Used Statistics')
         plt.show()
 
-    
     def plotInkUsedPrediction(self):
         """
         Description
