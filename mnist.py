@@ -6,6 +6,7 @@ import sklearn.linear_model as skl
 import sklearn.metrics as skm
 import sklearn.preprocessing as skp
 
+
 class MNIST:
     """
     MNIST dataset loader and visualizer
@@ -88,7 +89,7 @@ class MNIST:
             Number of data
         """
         return self.dataframe.shape[0]
-    
+
     def exportStatisticalAnalysis(self):
         """
         Description
@@ -120,7 +121,7 @@ class MNIST:
         None
         """
         zero_mean = []
-        zero_std  = []
+        zero_std = []
 
         for i in range(1, 785):
             hand = self.dataframe.iloc[:, i].describe()[['mean', 'std']]
@@ -130,7 +131,7 @@ class MNIST:
                 zero_std.append(i)
 
         print('Pixels with zero mean: ', zero_mean)
-        print('Pixels with zero std: ', zero_std)  
+        print('Pixels with zero std: ', zero_std)
 
     def plotHeatmapUnusedPixels(self):
         """
@@ -161,13 +162,13 @@ class MNIST:
 
         for pixel in unused_pixels:
             row = (pixel - 1) // 28  # Calculate row index
-            col = (pixel - 1) % 28   # Calculate column index
+            col = (pixel - 1) % 28  # Calculate column index
             heatmap_data[row][col] = 1  # Set unused pixel value to 1
 
         plt.figure(figsize=(8, 6))
         sns.heatmap(heatmap_data, cmap='YlGnBu')
         plt.title('Heatmap of Unused Pixels in MNIST')
-        plt.show()      
+        plt.show()
 
     def get(self, selected_number):
         """
@@ -186,7 +187,7 @@ class MNIST:
             selected_numberth data
         """
         return self.mnist_data[selected_number]
-    
+
     def getLabel(self, selected_number):
         """
         Description
@@ -203,7 +204,7 @@ class MNIST:
         int
             selected_numberth label"""
         return self.get(selected_number)[0]
-    
+
     def getDigit(self, selected_number):
         """
         Description
@@ -221,7 +222,7 @@ class MNIST:
             selected_numberth digit
         """
         return self.get(selected_number)[1:]
-    
+
     def displayImage(self, selected_number):
         """
         Description
@@ -260,14 +261,15 @@ class MNIST:
         colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'orange', 'purple', 'brown']
 
         for i, label in enumerate(unique_labels):
-            plt.hist(self.labels[self.labels==label], bins=[label, label+1], color=colors[i], rwidth=0.8, align='left')
+            plt.hist(self.labels[self.labels == label], bins=[label, label + 1], color=colors[i], rwidth=0.8,
+                     align='left')
 
         plt.xlabel('Labels')
         plt.ylabel('Frequency')
         plt.title('Class Distribution')
         plt.xticks(range(10))
         plt.show()
-    
+
     def plotClassPercentage(self):
         """
         Description
@@ -319,7 +321,7 @@ class MNIST:
         ink_std = [np.std(ink[self.labels == i]) for i in range(10)]
 
         return ink, ink_mean, ink_std
-    
+
     def plotInkUsedStatistics(self):
         """
         Description
@@ -339,7 +341,7 @@ class MNIST:
 
         plt.bar(range(10), ink_mean, color=colors)
         plt.errorbar(range(10), ink_mean, yerr=ink_std, color='k', fmt='o')
-        plt.xticks(range(10)) 
+        plt.xticks(range(10))
         plt.xlabel('Labels')
         plt.ylabel('Ink Used')
         plt.title('Ink Used Statistics')
@@ -372,7 +374,68 @@ class MNIST:
         disp.plot()
         plt.title('Ink Used Confusion Matrix')
         plt.show()
+        self.plot_classification_report(self.labels, predicted_labels, 'Logistic Regression')
 
+
+    def plot_classification_report(self, y_true, predicted_classes, model_name):
+        # Plot labels
+        labels = ["Digit-{}".format(i) for i in range(10)]
+        # Dictionaries with keys the classes
+        correct = {}
+        incorrect = {}
+
+        for digit in labels:
+            correct[digit] = 0
+            incorrect[digit] = 0
+        for c in range(0, 10):
+            self.get_statistics(c, y_true, predicted_classes, correct, incorrect)
+            corrects = []  # list of correct predictions per classes
+        for v in correct.values():
+            corrects.append(v)
+        incorrects = []  # list of incorrect predictions per classes
+        for v in incorrect.values():
+            incorrects.append(v)
+
+        # ~ Plotting section
+        x = np.arange(len(labels))  # the label locations
+        width = 0.4  # the width of the bars
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        # Define 2 bars inside the plot
+        rects1 = ax.bar(x - width / 2, corrects, width, align="edge", label='Correctly Classified Digits')
+        rects2 = ax.bar(x + width / 2, incorrects, width, align="edge", label='Incorrectly Classified Digits')
+
+        # Add some text for labels, title and custom x-axis tick labels, etc.
+        ax.set_ylabel('Scores')
+        ax.set_title('Classification results for ' + model_name + ' model')
+        ax.set_xticks(x + 0.2)
+        ax.set_facecolor('white')
+        ax.set_xticklabels(labels)
+        ax.legend()
+        self.autolabel(rects1, ax)
+        self.autolabel(rects2, ax)
+
+        # Save classification report
+        plt.savefig('./images/' + model_name.replace(" ", "") + '_class_report.png')
+        plt.show()
+
+    def get_statistics(self, n, y_true, predicted_classes, correct, incorrect):
+        for i in range(0, 37000):
+            if y_true[i] == n and predicted_classes[i] == n:
+                correct['Digit-' + str(n)] += 1
+            elif y_true[i] == n and predicted_classes[i] != n:
+                incorrect['Digit-' + str(n)] += 1
+        return correct, incorrect
+
+
+    def autolabel(self, rects, ax):
+        for rect in rects:
+            height = rect.get_height()
+            ax.annotate('{}'.format(height),
+                        xy=(rect.get_x() + rect.get_width() / 2, height),
+                        xytext=(0, 3),  # 3 points vertical offset
+                        textcoords="offset points",
+                        ha='center', va='bottom')
 
 
 
@@ -384,5 +447,5 @@ if __name__ == '__main__':
     # mnist.displayImage(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
-    # mnist.plotInkUsedPrediction()
-    mnist.plotInkUsedStatistics()
+    mnist.plotInkUsedPrediction()
+    # mnist.plotInkUsedStatistics()
