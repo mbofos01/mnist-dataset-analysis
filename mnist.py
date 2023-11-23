@@ -5,6 +5,8 @@ import seaborn as sns
 import sklearn.linear_model as skl
 import sklearn.metrics as skm
 import sklearn.preprocessing as skp
+import sklearn.model_selection as skms
+from sklearn.svm import SVC
 
 from utils import autolabel, get_statistics, plot_classification_report, plot_confusion_matrixs
 
@@ -109,6 +111,22 @@ class MNIST:
             Number of data
         """
         return self.classes
+
+    def get_dataframe(self):
+        """
+        Description
+        ----------
+        Get the mnist csv df
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        return self.dataframe
 
     def get_mnist_data(self):
         """
@@ -540,6 +558,51 @@ class MNIST:
                                                                                                'Regression',
                                normalize=True)
 
+    def raw_values_preprocessing(self):
+        mnist_data = self.get_dataframe()
+        train, test = skms.train_test_split(mnist_data, train_size=5000, random_state=1)
+
+        # Training labels
+        y_train = train['label'].values
+        # Training data (pixels)
+        x_train = train.drop(labels=['label'], axis=1)
+        # Testing labels
+        y_test = test['label'].values
+        # Testing data (pixels)
+        x_test = test.drop(labels=['label'], axis=1)
+
+        x_train = x_train / 255.0
+        x_test = x_test / 255.0
+
+        return x_train, x_test, y_train, y_test
+
+    def tune_logistic_regression(self):
+        x_train, x_test, y_train, y_test = self.raw_values_preprocessing()
+
+        # Set up the parameter grid
+        param_grid = {'C': [0.01, 0.1, 1, 10, 100], 'solver': ['liblinear', 'saga'],
+                      'max_iter': [300, 400, 500]}
+
+        # Instantiate and fit the grid search
+        grid_logreg = skms.GridSearchCV(skl.LogisticRegression(penalty='l1'), param_grid=param_grid, refit=True,
+                                        cv=5)
+        grid_logreg.fit(x_train, y_train)
+
+        # print the best parameters
+        print(grid_logreg.best_params_)
+
+    def tune_svm(self):
+        x_train, x_test, y_train, y_test = self.raw_values_preprocessing()
+        # Set up the parameter grid
+        param_grid = {'C': [0.1, 1, 5, 10], 'kernel': ['rbf'],
+                      'gamma': [1e-3, 1e-4]}
+
+        svc = SVC()
+        grid_svm = skms.GridSearchCV(svc, param_grid=param_grid, refit=True, cv=5)
+        grid_svm.fit(x_train, y_train)
+        # print the best parameters
+        print(grid_svm.best_params_)
+
 
 if __name__ == '__main__':
     mnist = MNIST()
@@ -549,7 +612,9 @@ if __name__ == '__main__':
     # mnist.displayImage(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
-    mnist.plot_ink_used_prediction()
-    #mnist.plot_region_feature_prediction()
-    #mnist.plot_both_features_prediction()
+    # mnist.plot_ink_used_prediction()
+    # mnist.plot_region_feature_prediction()
+    # mnist.plot_both_features_prediction()
+    #mnist.tune_svm()
+    mnist.tune_logistic_regression()
     # mnist.plotInkUsedStatistics()
