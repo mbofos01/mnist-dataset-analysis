@@ -6,7 +6,7 @@ import sklearn.linear_model as skl
 import sklearn.metrics as skm
 import sklearn.preprocessing as skp
 
-from utils import autolabel, get_statistics, plot_classification_report
+from utils import autolabel, get_statistics, plot_classification_report, plot_confusion_matrixs
 
 
 class MNIST:
@@ -73,6 +73,7 @@ class MNIST:
         self.mnist_data = self.dataframe.values
         self.labels = self.mnist_data[:, 0]
         self.digits = self.mnist_data[:, 1:]
+        self.classes = ["Digit-{}".format(i) for i in range(10)]
         print('MNIST data loaded successfully')
 
     def get_size(self):
@@ -91,6 +92,23 @@ class MNIST:
             Number of data
         """
         return self.dataframe.shape[0]
+
+    def get_classes(self):
+        """
+        Description
+        ----------
+        Get number of data
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            Number of data
+        """
+        return self.classes
 
     def get_mnist_data(self):
         """
@@ -394,7 +412,12 @@ class MNIST:
         plt.title('Ink Used Confusion Matrix')
         plt.show()
         """ {WIP} """
-        plot_classification_report(self.labels, predicted_labels, 'Logistic Regression')
+        plot_classification_report(self.labels, predicted_labels, classes=self.classes, model_name='Ink feature '
+                                                                                                   'Logistic '
+                                                                                                   'Regression')
+        plot_confusion_matrixs(self.labels, predicted_labels, classes=self.classes, model_name='Ink feature Logistic '
+                                                                                               'Regression',
+                               normalize=True)
 
     def extract_region_data(self):
         """
@@ -457,7 +480,7 @@ class MNIST:
         x = regions_norm
         y = self.labels
 
-        #print(np.array(x).shape, np.array(y).shape)
+        # print(np.array(x).shape, np.array(y).shape)
 
         model = skl.LogisticRegression(multi_class='multinomial').fit(x, y)
 
@@ -473,7 +496,49 @@ class MNIST:
         disp.plot()
         plt.title('Region feature Confusion Matrix')
         plt.show()
-        plot_classification_report(self.labels, predicted_labels, 'Region feature Logistic Regression')
+        plot_classification_report(self.labels, predicted_labels, classes=self.classes, model_name='Region feature '
+                                                                                                   'Logistic '
+                                                                                                   'Regression')
+        plot_confusion_matrixs(self.labels, predicted_labels, classes=self.classes, model_name='Region feature Logistic'
+                                                                                               ' Regression',
+                               normalize=True)
+
+    def plot_both_features_prediction(self):
+        """
+        Description
+        ----------
+        Build confusion matrix and classification report for digits predicted with multinomial logistic regression model
+        from both the region feature and the ink featre
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        regions, avg_reg = self.extract_region_data()
+        ink, _, _ = self.calculate_ink_used()
+        combined_features = np.concatenate((np.array(regions), np.array([ink]).T), axis=1)
+
+        combined_norm_features = skp.scale(combined_features)
+        labels = self.labels
+        model = skl.LogisticRegression(multi_class='multinomial').fit(combined_norm_features, labels)
+
+        predicted_labels = model.predict(combined_norm_features)
+        print("The accuracy of the model with combined feature is ", (labels == predicted_labels).sum() / len(labels))
+
+        confusion_matrix = skm.confusion_matrix(self.labels, predicted_labels)
+        disp = skm.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=range(10))
+        disp.plot()
+        plt.title('Both features Confusion Matrix')
+        plt.show()
+        plot_classification_report(self.labels, predicted_labels, classes=self.classes,
+                                   model_name='Both features Logistic Regression')
+        plot_confusion_matrixs(self.labels, predicted_labels, classes=self.classes, model_name='Both features Logistic '
+                                                                                               'Regression',
+                               normalize=True)
 
 
 if __name__ == '__main__':
@@ -484,6 +549,7 @@ if __name__ == '__main__':
     # mnist.displayImage(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
-    #mnist.plot_ink_used_prediction()
-    mnist.plot_region_feature_prediction()
+    mnist.plot_ink_used_prediction()
+    #mnist.plot_region_feature_prediction()
+    #mnist.plot_both_features_prediction()
     # mnist.plotInkUsedStatistics()
