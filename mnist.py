@@ -435,34 +435,56 @@ class MNIST:
         """
         data = self.get_mnist_data()
         all_means = []
-        all_labels = []
         ink_regions = []
         total_ink = []
-        for i in range(10):
-            rows = data[np.where(data[:, 0] == i)]
-            # For every image in the set
-            for j in rows:
-                a = j[1:]
-                # Reshape the image
-                a = a.reshape(28, 28)
-                # Divide the image into 4 regions
-                ink_nw = a[0:14, 0:14]
-                ink_ne = a[0:14, 14:28]
-                ink_sw = a[14:28, 0:14]
-                ink_se = a[14:28, 14:28]
-                inks = [ink_nw, ink_ne, ink_sw, ink_se]
+        # for label in range(10):
+        #     rows = data[np.where(data[:, 0] == label)]
+        #     # For every image in the set
+        #     for j in rows:
+        #         a = j[1:]
+        #         # Reshape the image
+        #         a = a.reshape(28, 28)
+        #         # Divide the image into 4 regions
+        #         ink_nw = a[0:14, 0:14]
+        #         ink_ne = a[0:14, 14:28]
+        #         ink_sw = a[14:28, 0:14]
+        #         ink_se = a[14:28, 14:28]
+        #         inks = [ink_nw, ink_ne, ink_sw, ink_se]
 
-                # Mean activation of each region of each image
-                means = [np.mean(i) for i in inks]
-                # Total ink of each region of an image
-                total_ink = [np.sum(i) for i in inks]
+        #         # Mean activation of each region of each image
+        #         means = [np.mean(i) for i in inks]
+        #         # Total ink of each region of an image
+        #         total_ink = [np.sum(i) for i in inks]
 
-                all_means.append(means)
-                # Create a parallel list of labels of each image
-                all_labels.append(j[0])
+        #         all_means.append(means)
+        #         # Create a parallel list of labels of each image
+        #         all_labels.append(j[0])
 
-            ink_regions.append(total_ink)
-        return all_means,all_labels, ink_regions
+        #     ink_regions.append(total_ink)
+
+        ink_regions = np.zeros(10)
+        # For every image in the set
+        for j in data:
+            a = j[1:]
+            # Reshape the image
+            a = a.reshape(28, 28)
+            # Divide the image into 4 regions
+            ink_nw = a[0:14, 0:14]
+            ink_ne = a[0:14, 14:28]
+            ink_sw = a[14:28, 0:14]
+            ink_se = a[14:28, 14:28]
+            inks = [ink_nw, ink_ne, ink_sw, ink_se]
+
+            # Mean activation of each region of each image
+            means = [np.mean(i) for i in inks]
+            # Total ink of each region of an image
+            total_ink = [np.sum(i) for i in inks]
+
+            all_means.append(means)
+
+            # ink_regions[j[0]] += total_ink
+
+        return all_means, ink_regions
 
     def plot_region_feature_prediction(self):
         """
@@ -479,19 +501,19 @@ class MNIST:
         -------
         None
         """
-        regions,labels, avg_reg = self.extract_region_data()
+        regions, avg_reg = self.extract_region_data()
         regions_norm = skp.scale(regions)
         x = regions_norm
-        y = labels
+        y = self.labels
 
         # print(np.array(x).shape, np.array(y).shape)
 
         model = skl.LogisticRegression(multi_class='multinomial').fit(x, y)
 
-        # y_predict = model.predict(x)
-        # print(y[0:10], y_predict[0:10])
-        # print((y_predict == 1).sum()/len(y))
-        # (y == y_predict).sum() / len(y)
+        y_predict = model.predict(x)
+        print(y[0:10], y_predict[0:10])
+        print((y_predict == 1).sum()/len(y))
+        (y == y_predict).sum() / len(y)
 
         predicted_labels = model.predict(x)
 
@@ -522,11 +544,11 @@ class MNIST:
         -------
         None
         """
-        regions, avg_reg = self.extract_region_data()
+        regions,avg_reg = self.extract_region_data()
         ink, _, _ = self.calculate_ink_used()
         combined_features = np.concatenate((np.array(regions), np.array([ink]).T), axis=1)
-
         combined_norm_features = skp.scale(combined_features)
+
         labels = self.labels
         model = skl.LogisticRegression(multi_class='multinomial').fit(combined_norm_features, labels)
 
@@ -538,8 +560,7 @@ class MNIST:
         disp.plot()
         plt.title('Both features Confusion Matrix')
         plt.show()
-        plot_classification_report(self.labels, predicted_labels, classes=self.classes,
-                                   model_name='Both features Logistic Regression')
+        plot_classification_report(self.labels, predicted_labels, classes=self.classes,model_name='Both features Logistic Regression')
         plot_confusion_matrixs(self.labels, predicted_labels, classes=self.classes, model_name='Both features Logistic '
                                                                                                'Regression',
                                normalize=True)
@@ -554,5 +575,6 @@ if __name__ == '__main__':
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
     # mnist.plot_ink_used_prediction()
-    mnist.plot_region_feature_prediction()
+    # mnist.plot_region_feature_prediction()
     # mnist.plotInkUsedStatistics()
+    mnist.plot_both_features_prediction()
