@@ -6,6 +6,8 @@ import sklearn.linear_model as skl
 import sklearn.metrics as skm
 import sklearn.preprocessing as skp
 
+from utils import autolabel, get_statistics, plot_classification_report
+
 
 class MNIST:
     """
@@ -24,31 +26,31 @@ class MNIST:
         
     Methods
     -------
-    getSize()
+    get_size()
         Get number of data
-    exportStatisticalAnalysis()
+    export_statistical_analysis()
         Export statistical analysis of MNIST dataset to csv file
-    plotHeatmapUnusedPixels()
+    plot_heatmap_unused_pixels()
         Plot heatmap of unused pixels
-    printUnusedPixels()
+    print_unused_pixels()
         Print unused pixels
     get(selected_number)
         Get selected_numberth data
-    getLabel(selected_number)
+    get_label(selected_number)
         Get selected_numberth label
-    getDigit(selected_number)
+    get_digit(selected_number)
         Get selected_numberth digit
-    displayImage(selected_number)
+    display_image(selected_number)
         Display selected_numberth image
-    plotClassDistribution()
+    plot_class_distribution()
         Plot class distribution
-    plotClassPercentage()
+    plot_class_percentage()
         Plot class percentage
-    calculateInkUsed()
+    calculate_ink_used()
         Calculate the amount of ink used for the selected number
-    plotInkUsedStatistics()
+    plot_ink_used_stats()
         Plot ink used mean and standard deviation per class
-    plotInkUsedPrediction()
+    plot_ink_used_prediction()
         Build confusion matrix for digits predicted with multinomial logistic regression model from ink used
     """
 
@@ -73,7 +75,7 @@ class MNIST:
         self.digits = self.mnist_data[:, 1:]
         print('MNIST data loaded successfully')
 
-    def getSize(self):
+    def get_size(self):
         """
         Description
         ----------
@@ -90,7 +92,24 @@ class MNIST:
         """
         return self.dataframe.shape[0]
 
-    def exportStatisticalAnalysis(self):
+    def get_mnist_data(self):
+        """
+        Description
+        ----------
+        Get the dataframe
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        pd.DataFrame
+            All of data
+        """
+        return self.mnist_data
+
+    def export_statistical_analysis(self):
         """
         Description
         ----------
@@ -106,7 +125,7 @@ class MNIST:
         """
         self.dataframe.describe().to_csv('data/mnist_statistical_analysis.csv', index=True, header=True)
 
-    def printUnusedPixels(self):
+    def print_unused_pixels(self):
         """
         Description
         ----------
@@ -133,7 +152,7 @@ class MNIST:
         print('Pixels with zero mean: ', zero_mean)
         print('Pixels with zero std: ', zero_std)
 
-    def plotHeatmapUnusedPixels(self):
+    def plot_heatmap_unused_pixels(self):
         """
         Description
         ----------
@@ -188,7 +207,7 @@ class MNIST:
         """
         return self.mnist_data[selected_number]
 
-    def getLabel(self, selected_number):
+    def get_label(self, selected_number):
         """
         Description
         ----------
@@ -205,7 +224,7 @@ class MNIST:
             selected_numberth label"""
         return self.get(selected_number)[0]
 
-    def getDigit(self, selected_number):
+    def get_digit(self, selected_number):
         """
         Description
         ----------
@@ -223,7 +242,7 @@ class MNIST:
         """
         return self.get(selected_number)[1:]
 
-    def displayImage(self, selected_number):
+    def display_image(self, selected_number):
         """
         Description
         ----------
@@ -243,7 +262,7 @@ class MNIST:
         plt.imshow(self.digits[selected_number].reshape(img_size, img_size))
         plt.show()
 
-    def plotClassDistribution(self):
+    def plot_class_distribution(self):
         """
         Description
         ----------
@@ -270,7 +289,7 @@ class MNIST:
         plt.xticks(range(10))
         plt.show()
 
-    def plotClassPercentage(self):
+    def plot_class_percentage(self):
         """
         Description
         ----------
@@ -294,7 +313,7 @@ class MNIST:
         plt.text(-0.3, -1.2, f'Majority class: {major_class} ({major_percentage:.1f}%)', fontsize=12)
         plt.show()
 
-    def calculateInkUsed(self):
+    def calculate_ink_used(self):
         """
         Description
         ----------
@@ -322,7 +341,7 @@ class MNIST:
 
         return ink, ink_mean, ink_std
 
-    def plotInkUsedStatistics(self):
+    def plot_ink_used_stats(self):
         """
         Description
         ----------
@@ -336,7 +355,7 @@ class MNIST:
         -------
         None
         """
-        ink, ink_mean, ink_std = self.calculateInkUsed()
+        ink, ink_mean, ink_std = self.calculate_ink_used()
         colors = ['b', 'g', 'r', 'c', 'm', 'y', 'pink', 'orange', 'purple', 'brown']
 
         plt.bar(range(10), ink_mean, color=colors)
@@ -347,7 +366,7 @@ class MNIST:
         plt.title('Ink Used Statistics')
         plt.show()
 
-    def plotInkUsedPrediction(self):
+    def plot_ink_used_prediction(self):
         """
         Description
         ----------
@@ -361,8 +380,8 @@ class MNIST:
         -------
         None
         """
-        ink, _, _ = self.calculateInkUsed()
-        # The reshape is neccesary to call LogisticRegression() with a single feature
+        ink, _, _ = self.calculate_ink_used()
+        # Reshaping is necessary to call LogisticRegression() with a single feature
         ink = skp.scale(ink).reshape(-1, 1)
 
         logistic_regression = skl.LogisticRegression(multi_class='multinomial')
@@ -374,69 +393,87 @@ class MNIST:
         disp.plot()
         plt.title('Ink Used Confusion Matrix')
         plt.show()
-        self.plot_classification_report(self.labels, predicted_labels, 'Logistic Regression')
+        """ {WIP} """
+        plot_classification_report(self.labels, predicted_labels, 'Logistic Regression')
 
+    def extract_region_data(self):
+        """
+        Description
+        ----------
+        Extract the mean activation of each region
 
-    def plot_classification_report(self, y_true, predicted_classes, model_name):
-        # Plot labels
-        labels = ["Digit-{}".format(i) for i in range(10)]
-        # Dictionaries with keys the classes
-        correct = {}
-        incorrect = {}
+        Parameters
+        ----------
+        None
 
-        for digit in labels:
-            correct[digit] = 0
-            incorrect[digit] = 0
-        for c in range(0, 10):
-            self.get_statistics(c, y_true, predicted_classes, correct, incorrect)
-            corrects = []  # list of correct predictions per classes
-        for v in correct.values():
-            corrects.append(v)
-        incorrects = []  # list of incorrect predictions per classes
-        for v in incorrect.values():
-            incorrects.append(v)
+        Returns
+        -------
+        tuple[list[list[ndarray]], list[Union[list, list[ndarray]]]]
+        """
+        data = self.get_mnist_data()
+        all_means = []
+        ink_regions = []
+        total_ink = []
+        for i in range(10):
+            rows = data[np.where(data[:, 0] == i)]
+            # For every image in the set
+            for j in rows:
+                a = j[1:]
+                # Reshape the image
+                a = a.reshape(28, 28)
+                # Divide the image into 4 regions
+                ink_nw = a[0:14, 0:14]
+                ink_ne = a[0:14, 14:28]
+                ink_sw = a[14:28, 0:14]
+                ink_se = a[14:28, 14:28]
+                inks = [ink_nw, ink_ne, ink_sw, ink_se]
 
-        # ~ Plotting section
-        x = np.arange(len(labels))  # the label locations
-        width = 0.4  # the width of the bars
+                # Mean activation of each region of each image
+                means = [np.mean(i) for i in inks]
+                # Total ink of each region of an image
+                total_ink = [np.sum(i) for i in inks]
 
-        fig, ax = plt.subplots(figsize=(8, 6))
-        # Define 2 bars inside the plot
-        rects1 = ax.bar(x - width / 2, corrects, width, align="edge", label='Correctly Classified Digits')
-        rects2 = ax.bar(x + width / 2, incorrects, width, align="edge", label='Incorrectly Classified Digits')
+                all_means.append(means)
+            ink_regions.append(total_ink)
+        return all_means, ink_regions
 
-        # Add some text for labels, title and custom x-axis tick labels, etc.
-        ax.set_ylabel('Scores')
-        ax.set_title('Classification results for ' + model_name + ' model')
-        ax.set_xticks(x + 0.2)
-        ax.set_facecolor('white')
-        ax.set_xticklabels(labels)
-        ax.legend()
-        self.autolabel(rects1, ax)
-        self.autolabel(rects2, ax)
+    def plot_region_feature_prediction(self):
+        """
+        Description
+        ----------
+        Build confusion matrix and classification report for digits predicted with multinomial logistic regression model
+        from the region feature
 
-        # Save classification report
-        plt.savefig('./images/' + model_name.replace(" ", "") + '_class_report.png')
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        regions, avg_reg = self.extract_region_data()
+        regions_norm = skp.scale(regions)
+        x = regions_norm
+        y = self.labels
+
+        #print(np.array(x).shape, np.array(y).shape)
+
+        model = skl.LogisticRegression(multi_class='multinomial').fit(x, y)
+
+        # y_predict = model.predict(x)
+        # print(y[0:10], y_predict[0:10])
+        # print((y_predict == 1).sum()/len(y))
+        # (y == y_predict).sum() / len(y)
+
+        predicted_labels = model.predict(x)
+
+        confusion_matrix = skm.confusion_matrix(self.labels, predicted_labels)
+        disp = skm.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=range(10))
+        disp.plot()
+        plt.title('Region feature Confusion Matrix')
         plt.show()
-
-    def get_statistics(self, n, y_true, predicted_classes, correct, incorrect):
-        for i in range(0, 37000):
-            if y_true[i] == n and predicted_classes[i] == n:
-                correct['Digit-' + str(n)] += 1
-            elif y_true[i] == n and predicted_classes[i] != n:
-                incorrect['Digit-' + str(n)] += 1
-        return correct, incorrect
-
-
-    def autolabel(self, rects, ax):
-        for rect in rects:
-            height = rect.get_height()
-            ax.annotate('{}'.format(height),
-                        xy=(rect.get_x() + rect.get_width() / 2, height),
-                        xytext=(0, 3),  # 3 points vertical offset
-                        textcoords="offset points",
-                        ha='center', va='bottom')
-
+        plot_classification_report(self.labels, predicted_labels, 'Region feature Logistic Regression')
 
 
 if __name__ == '__main__':
@@ -447,5 +484,6 @@ if __name__ == '__main__':
     # mnist.displayImage(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
-    mnist.plotInkUsedPrediction()
+    #mnist.plot_ink_used_prediction()
+    mnist.plot_region_feature_prediction()
     # mnist.plotInkUsedStatistics()
