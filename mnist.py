@@ -435,6 +435,7 @@ class MNIST:
         """
         data = self.get_mnist_data()
         all_means = []
+        all_labels = []
         ink_regions = []
         total_ink = []
         for i in range(10):
@@ -457,8 +458,11 @@ class MNIST:
                 total_ink = [np.sum(i) for i in inks]
 
                 all_means.append(means)
+                # Create a parallel list of labels of each image
+                all_labels.append(j[0])
+
             ink_regions.append(total_ink)
-        return all_means, ink_regions
+        return all_means,all_labels, ink_regions
 
     def plot_region_feature_prediction(self):
         """
@@ -475,10 +479,10 @@ class MNIST:
         -------
         None
         """
-        regions, avg_reg = self.extract_region_data()
+        regions,labels, avg_reg = self.extract_region_data()
         regions_norm = skp.scale(regions)
         x = regions_norm
-        y = self.labels
+        y = labels
 
         # print(np.array(x).shape, np.array(y).shape)
 
@@ -546,10 +550,9 @@ if __name__ == '__main__':
     # mnist.exportStatisticalAnalysis()
     # mnist.printUnusedPixels()
     # mnist.plotHeatmapUnusedPixels()
-    # mnist.displayImage(0)
+    # mnist.display_image(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
-    mnist.plot_ink_used_prediction()
-    #mnist.plot_region_feature_prediction()
-    #mnist.plot_both_features_prediction()
+    # mnist.plot_ink_used_prediction()
+    mnist.plot_region_feature_prediction()
     # mnist.plotInkUsedStatistics()
