@@ -1,0 +1,2 @@
+SVM: {'C': 10, 'gamma': 0.001, 'kernel': 'rbf'}
+LR: {'C': 1, 'max_iter': 300, 'solver': 'liblinear'}
