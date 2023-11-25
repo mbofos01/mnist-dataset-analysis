@@ -605,22 +605,32 @@ class MNIST:
         x_train, x_test, y_train, y_test = self.raw_values_preprocessing()
 
         # Set up the parameter grid
-        param_grid = {'C': [0.01, 0.1, 1, 10, 100], 'solver': ['liblinear', 'saga'],
-                      'max_iter': [300, 400, 500]}
+        param_grid = {'C': [0.01, 0.1, 1, 10, 100]}
+        # param_grid = {'C': [0.01]} # optimal parameters
 
         # Instantiate and fit the grid search
-        grid_logreg = skms.GridSearchCV(skl.LogisticRegression(penalty='l1'), param_grid=param_grid, refit=True,
+        grid_logreg = skms.GridSearchCV(skl.LogisticRegression(penalty='l1',solver='liblinear',max_iter=300), param_grid=param_grid, refit=True,
                                         cv=5)
         grid_logreg.fit(x_train, y_train)
 
         # print the best parameters
         print(grid_logreg.best_params_)
 
+        best_model = grid_logreg.best_estimator_
+        predictions_remaining_test = best_model.predict(x_test)
+
+        # Calculate classification error
+        classification_error = 1 - skm.accuracy_score(y_test, predictions_remaining_test)
+        print(f"Classification Error on Remaining Test Data: {classification_error}")
+
+        return classification_error
+
     def tune_svm(self):
         x_train, x_test, y_train, y_test = self.raw_values_preprocessing()
         # Set up the parameter grid
-        param_grid = {'C': [0.1, 1, 5, 10], 'kernel': ['rbf'],
-                      'gamma': [1e-3, 1e-4]}
+        param_grid = {'C': [0.1, 1, 5, 10], 'kernel': ['rbf'],'gamma': [1e-3, 1e-4]}
+        # param_grid = {'C': [10], 'gamma': [0.001], 'kernel': ['rbf']} # optimal parameters
+
 
         svc = SVC()
         grid_svm = skms.GridSearchCV(svc, param_grid=param_grid, refit=True, cv=5)
@@ -628,17 +638,26 @@ class MNIST:
         # print the best parameters
         print(grid_svm.best_params_)
 
+        best_model = grid_svm.best_estimator_
+        predictions_remaining_test = best_model.predict(x_test)
+
+        # Calculate classification error
+        classification_error = 1 - skm.accuracy_score(y_test, predictions_remaining_test)
+        print(f"Classification Error on Remaining Test Data: {classification_error}")
+
+
+        return classification_error
 
 if __name__ == '__main__':
     mnist = MNIST()
     # mnist.exportStatisticalAnalysis()
     # mnist.printUnusedPixels()
     # mnist.plotHeatmapUnusedPixels()
-    # mnist.display_image(0)
+    # mnist.displayImage(0)
     # mnist.plotClassDistribution()
     # mnist.plotClassPercentage()
     # mnist.plot_ink_used_prediction()
     # mnist.plot_region_feature_prediction()
     # mnist.plot_both_features_prediction()
-    #mnist.tune_svm()
-    mnist.tune_logistic_regression()
+    svm_error = mnist.tune_svm()
+    logit_error = mnist.tune_logistic_regression()
