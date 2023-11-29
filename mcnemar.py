@@ -13,7 +13,7 @@ model_svm = SVC(C=10,gamma=0.001,kernel='rbf')  # SVM model
 model_rf = skl.LogisticRegression(C=0.01,penalty='l1',solver='liblinear',max_iter=300)  # Random Forest model
 
 
-train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=0.9, random_state=42)
+train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=0.2, random_state=42)
 print("Data Splitted")
 
 # Fit the models
