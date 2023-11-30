@@ -5,34 +5,43 @@ import mnist as mn
 
 data = mn.MNIST()
 
-X = data.digits
-y = data.labels
 
 # Create your models
 model_svm = SVC(C=10,gamma=0.001,kernel='rbf')  # SVM model
 model_rf = skl.LogisticRegression(C=0.01,penalty='l1',solver='liblinear',max_iter=300)  # Random Forest model
 
 
-train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=0.2, random_state=42)
+train, test = train_test_split(data.get_dataframe(), test_size=0.2, random_state=42)        
+# Training labels
+y_train = train['label'].values
+# Training data (pixels)
+x_train = train.drop(labels=['label'], axis=1)
+# Testing labels
+y_test = test['label'].values
+# Testing data (pixels)
+x_test = test.drop(labels=['label'], axis=1)
+
+x_train = x_train / 255.0
+x_test = x_test / 255.0
 print("Data Splitted")
 
 # Fit the models
-model_svm.fit(train_x, train_y)
+model_svm.fit(x_train, y_train)
 print("SVM Fitted")
 
-model_rf.fit(train_x, train_y)
+model_rf.fit(x_train, y_train)
 print("Logistic Regression Fitted")
 
 # Make predictions
-pred_svm = model_svm.predict(test_x)
+pred_svm = model_svm.predict(x_test)
 print("SVM Predicted")
 
-pred_rf = model_rf.predict(test_x)
+pred_rf = model_rf.predict(x_test)
 print("Logistic Regression Predicted")
 
 # Compute the accuracy scores
-acc_svm = model_svm.score(test_x, test_y)
-acc_rf = model_rf.score(test_x, test_y)
+acc_svm = model_svm.score(x_test, y_test)
+acc_rf = model_rf.score(x_test, y_test)
 
 print(f"SVM Accuracy: {acc_svm}")
 print(f"Logistic Regression Accuracy: {acc_rf}")
@@ -43,7 +52,7 @@ print(f"Logistic Regression Accuracy: {acc_rf}")
 from mlxtend.evaluate import mcnemar_table
 from mlxtend.evaluate import mcnemar
 
-tb_svm = mcnemar_table(y_target=test_y, 
+tb_svm = mcnemar_table(y_target=y_test, 
                    y_model1=pred_svm, 
                    y_model2=pred_rf)
 

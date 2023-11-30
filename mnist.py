@@ -596,6 +596,7 @@ class MNIST:
         # Testing data (pixels)
         x_test = test.drop(labels=['label'], axis=1)
 
+        # Normalize the data
         x_train = x_train / 255.0
         x_test = x_test / 255.0
 

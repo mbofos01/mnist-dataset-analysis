@@ -4,9 +4,9 @@ SVM Fitted
 Logistic Regression Fitted
 SVM Predicted
 Logistic Regression Predicted
-SVM Accuracy: 0.10821428571428572
-Logistic Regression Accuracy: 0.9122619047619047
-[[ 891   18]
- [6772  719]]
-chi-squared: 6716.201620029455
-p-value: 0.0
+SVM Accuracy: 0.9496428571428571
+Logistic Regression Accuracy: 0.8692857142857143
+[[7255  722]
+ [  47  376]]
+chi-squared: 590.7360208062419
+p-value: 1.7330623855159958e-130
