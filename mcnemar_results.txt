@@ -10,3 +10,19 @@ Logistic Regression Accuracy: 0.8692857142857143
  [  47  376]]
 chi-squared: 590.7360208062419
 p-value: 1.7330623855159958e-130
+
+
+WITHOUT UNUSED PIXELS
+
+MNIST data loaded successfully
+Data Splitted
+SVM Fitted
+Logistic Regression Fitted
+SVM Predicted
+Logistic Regression Predicted
+SVM Accuracy: 0.9496428571428571
+Logistic Regression Accuracy: 0.8691666666666666
+[[7253  724]
+ [  48  375]]
+chi-squared: 590.1878238341969
+p-value: 2.280628689033532e-130

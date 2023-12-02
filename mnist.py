@@ -161,6 +161,33 @@ class MNIST:
         """
         self.dataframe.describe().to_csv('data/mnist_statistical_analysis.csv', index=True, header=True)
 
+    def get_unused_pixels(self):
+        """
+        Description
+        ----------
+        Get unused pixels
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        list
+            Unused pixels
+        """
+        zero_mean = []
+        zero_std = []
+
+        for i in range(1, 785):
+            hand = self.dataframe.iloc[:, i].describe()[['mean', 'std']]
+            if hand['mean'] == 0.0:
+                zero_mean.append(i)
+            if hand['std'] == 0.0:
+                zero_std.append(i)
+
+        return list(set(zero_mean + zero_std))
+
     def print_unused_pixels(self):
         """
         Description
