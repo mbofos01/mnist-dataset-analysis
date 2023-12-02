@@ -624,16 +624,19 @@ class MNIST:
         classification_error = 1 - skm.accuracy_score(y_test, predictions_remaining_test)
         print(f"Classification Error on Remaining Test Data: {classification_error}")
 
+
+        print(grid_logreg.cv_results_)
+
         return classification_error
 
     def tune_svm(self):
         x_train, x_test, y_train, y_test = self.raw_values_preprocessing()
         # Set up the parameter grid
         param_grid = {'C': [0.1, 1, 5, 10], 'kernel': ['rbf'],'gamma': [1e-3, 1e-4]}
-        # param_grid = {'C': [10], 'gamma': [0.001], 'kernel': ['rbf']} # optimal parameters
+        # param_grid = {'C': [0.01 ,0.1, 1, 5, 10]} # optimal parameters
 
 
-        svc = SVC()
+        svc = SVC(gamma=0.001,kernel='rbf')
         grid_svm = skms.GridSearchCV(svc, param_grid=param_grid, refit=True, cv=5)
         grid_svm.fit(x_train, y_train)
         # print the best parameters
@@ -646,6 +649,7 @@ class MNIST:
         classification_error = 1 - skm.accuracy_score(y_test, predictions_remaining_test)
         print(f"Classification Error on Remaining Test Data: {classification_error}")
 
+        print(grid_svm.cv_results_)
 
         return classification_error
 
@@ -661,4 +665,4 @@ if __name__ == '__main__':
     # mnist.plot_region_feature_prediction()
     # mnist.plot_both_features_prediction()
     svm_error = mnist.tune_svm()
-    logit_error = mnist.tune_logistic_regression()
+    # logit_error = mnist.tune_logistic_regression()    

@@ -1,2 +1,45 @@
 SVM: {'C': 10, 'gamma': 0.001, 'kernel': 'rbf'}
 LR: {'C': 1, 'max_iter': 300, 'solver': 'liblinear'}
+
+SVM:
+{'C': 10, 'gamma': 0.001, 'kernel': 'rbf'}
+Classification Error on Remaining Test Data: 0.07310810810810808
+{
+'mean_fit_time': array([15.06809754,  8.20239787,  5.32985225,  3.57278099,  2.64639168]), 
+'std_fit_time': array([3.11568515, 1.17269669, 1.24918244, 0.19331211, 0.58270895]), 
+'mean_score_time': array([5.49635906, 3.92275577, 3.86066685, 2.88974218, 2.12165661]), 
+'std_score_time': array([1.36128538, 0.49325156, 0.93572165, 0.11776684, 0.82269576]), 
+'param_C': masked_array(data=[0.01, 0.1, 1, 5, 10],mask=[False, False, False, False, False],fill_value='?',dtype=object), 
+'params': [{'C': 0.01}, {'C': 0.1}, {'C': 1}, {'C': 5}, {'C': 10}], 
+'split0_test_score': array([0.114, 0.677, 0.879, 0.908, 0.921]), 
+'split1_test_score': array([0.115, 0.698, 0.915, 0.931, 0.931]), 
+'split2_test_score': array([0.115, 0.678, 0.876, 0.897, 0.907]), 
+'split3_test_score': array([0.114, 0.68 , 0.907, 0.925, 0.934]), 
+'split4_test_score': array([0.114, 0.677, 0.887, 0.915, 0.916]), 
+'mean_test_score': array([0.1144, 0.682 , 0.8928, 0.9152, 0.9218]), 
+'std_test_score': array([0.0004899 , 0.00807465, 0.0154971 , 0.01207311, 0.00986712]), 
+'rank_test_score': array([5, 4, 3, 2, 1])
+}
+
+
+LR:
+{'C': 1}
+Classification Error on Remaining Test Data: 0.10729729729729731
+
+
+{
+'mean_fit_time': array([ 0.46693559,  0.69682698,  1.4557879 ,  7.75065169, 14.7919867 ]), 
+'std_fit_time': array([0.06142393, 0.01478727, 0.05042266, 0.35435995, 1.73822821]), 
+'mean_score_time': array([0.01135435, 0.00768957, 0.00731874, 0.00898914, 0.0111382 ]), 
+'std_score_time': array([0.00385835, 0.00168538, 0.00326088, 0.00065585, 0.0049989 ]), 
+'param_C': masked_array(data=[0.01, 0.1, 1, 10, 100],mask=[False, False, False, False, False],fill_value='?',dtype=object), 
+'params': [{'C': 0.01}, {'C': 0.1}, {'C': 1}, {'C': 10}, {'C': 100}], 
+'split0_test_score': array([0.636, 0.864, 0.885, 0.85 , 0.834]), 
+'split1_test_score': array([0.656, 0.875, 0.895, 0.85 , 0.836]), 
+'split2_test_score': array([0.639, 0.845, 0.886, 0.855, 0.831]), 
+'split3_test_score': array([0.641, 0.879, 0.903, 0.877, 0.865]), 
+'split4_test_score': array([0.645, 0.852, 0.872, 0.843, 0.83 ]), 
+'mean_test_score': array([0.6434, 0.863 , 0.8882, 0.855 , 0.8392]), 
+'std_test_score': array([0.0069455 , 0.01300769, 0.01041921, 0.01164474, 0.01307517]), 
+'rank_test_score': array([5, 2, 1, 3, 4])
+}
