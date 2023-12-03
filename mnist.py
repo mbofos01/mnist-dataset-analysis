@@ -574,6 +574,53 @@ class MNIST:
                                                                                                ' Regression',
                                normalize=True)
 
+    def plot_raw_pixels_prediction(self):
+        """
+        Description
+        ----------
+        Build confusion matrix and classification report for digits predicted with multinomial logistic regression model
+        from the region feature
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        mnist_data = self.get_dataframe()
+
+        # Training labels
+        y = mnist_data['label'].values
+        # Training data (pixels)
+        x = mnist_data.drop(labels=['label'], axis=1)
+        # Normalize the data
+        x = x / 255.0
+
+        # print(np.array(x).shape, np.array(y).shape)
+
+        model = skl.LogisticRegression(multi_class='multinomial').fit(x, y)
+
+        y_predict = model.predict(x)
+        print(y[0:10], y_predict[0:10])
+        print((y_predict == 1).sum()/len(y))
+        (y == y_predict).sum() / len(y)
+
+        predicted_labels = model.predict(x)
+
+        confusion_matrix = skm.confusion_matrix(self.labels, predicted_labels)
+        disp = skm.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=range(10))
+        disp.plot()
+        plt.title('Raw Pixels Confusion Matrix')
+        plt.show()
+        plot_classification_report(self.labels, predicted_labels, classes=self.classes, model_name='Raw Pixels '
+                                                                                                   'Logistic '
+                                                                                                   'Regression')
+        plot_confusion_matrixs(self.labels, predicted_labels, classes=self.classes, model_name='Raw Pixels Logistic'
+                                                                                               ' Regression',
+                               normalize=True)
+
     def plot_both_features_prediction(self):
         """
         Description
@@ -691,5 +738,6 @@ if __name__ == '__main__':
     # mnist.plot_ink_used_prediction()
     # mnist.plot_region_feature_prediction()
     # mnist.plot_both_features_prediction()
-    svm_error = mnist.tune_svm()
+    # svm_error = mnist.tune_svm()
     # logit_error = mnist.tune_logistic_regression()    
+    mnist.plot_raw_pixels_prediction()
