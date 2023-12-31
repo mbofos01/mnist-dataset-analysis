@@ -1,24 +1,3 @@
-# General
-This assignment should be performed by groups of 3 students.
-
-The report should be handed in ultimately on <strong>Friday, December 8th 2023 at midnight</strong>. Send your report to A.J.Feelders@uu.nl.
-
-## Submission Details
-<ul>
-<li>Put your names and studentnumbers in the body of the message and on the first page of the report. </li>
-
-<li>The report should be about 10-15 pages long and should be in pdf format.</li> 
-
-<li>Write the report as an application oriented machine learning paper, with an introduction, description of the data, description of the experimental setup, analysis of experimental results, and a conclusion (this is not an exhaustive enumertion, you may, of course, include additional sections).</li> 
-
-<li>You don't need to describe the machine learning algorithms used, but it should be clear which algorithms were used, which hyperparameters of those algorithms were tuned, and how they were tuned.</li> 
-
-<li>Give the names of the R or Python functions you used, and with which settings. By doing so, you allow others to reproduce (and check!) your findings. This is an important aspect of empirical research.</li>
-
-<li>You can use R or Python to perform the analysis. Depending on your preferred language, please read the relevant instructions below.</li>
-
-</ul>
-
 # Instructions
 
 For this assignment we are going to analyze a data set of handwritten digits. The task is to determine the digit (0..9) that was written, from the pixel image (28x28 greyscale values). The dataset to be used is in the file mnist.csv, and its documentation is in the file mnist-documentation.txt.
